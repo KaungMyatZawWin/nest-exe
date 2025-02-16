@@ -6,10 +6,8 @@ import { AuthDto } from "./dto";
 export class AuthController{
     constructor(private authService:AuthService){}
     @Post('/signup')
-    singup(@Body() authDto:AuthDto){
-        console.log("checking ==> " ,authDto);
-        
-        return this.authService.signup();
+    singup(@Body() dto:AuthDto){       
+        return this.authService.signup(dto);
     }
 
     @Post('/signin')
