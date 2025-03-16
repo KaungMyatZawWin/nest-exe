@@ -42,9 +42,12 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+prisma/migrations
+
 # temp directory
 .temp
 .tmp
+package-lock.json
 
 # Runtime data
 pids
