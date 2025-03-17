@@ -1,14 +1,10 @@
-import { IsEmail, isNotEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class AuthDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-  @IsString()
-  @IsNotEmpty()
-  password: string;
+enum UserRole {
+  R001, //SuperAdmin
+  R002, //Admin
+  R003, //Customer
 }
-
 export class SignUpRequestDto {
   @IsNotEmpty()
   UserName :string;
@@ -24,5 +20,17 @@ export class SignUpRequestDto {
 
   @IsNotEmpty()
   @IsString()
+  Password: string;
+
+  @IsNotEmpty()
+  @IsIn(['R001', 'R002','R003'], { message: 'Role must be either R001, R002 or R003' })
+  Role: UserRole;
+}
+
+export class SignInRequestDto {
+  @IsNotEmpty()
+  UserName: string;
+
+  @IsNotEmpty()
   Password: string;
 }

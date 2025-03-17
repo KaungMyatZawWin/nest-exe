@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  R001 //SuperAdmin
+  R002 //Admin
+  R003 //Customer
+}
+
 model Tbl_User {
   Id Int @id @default(autoincrement()) 
   UserId String @default(uuid())
@@ -20,6 +20,7 @@ model Tbl_User {
   FullName String?
   Email String @unique
   Password String
+  Role UserRole
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @default(now())
 }

@@ -18,12 +18,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    response.status(status).json({
-      status: false,
-      statusCode: status,
-      path: request.url,
-      message: exception.message,
-      result: exception,
-    });
+    response.status(status).json(exception);
   }
 }
+
+// {
+//   status: false,
+//   statusCode: status,
+//   path: request.url,
+//   message: exception.message,
+//   respDesc: exception,
+// }
