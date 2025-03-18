@@ -2,6 +2,7 @@ enum EnumRespType {
   Success = "Success",
   ValidationError = "Validation Error",
   SystemError = "System Error",
+  NotFoundError = "Not Found Error"
 }
 
 export class ResultService<T> {
@@ -74,6 +75,33 @@ export class ResultService<T> {
       message,
       EnumRespType.SystemError,
       data,
+      statusCode,
+    );
+  }
+
+  public static NotFoundError<T>(
+    message: string,
+    data: T | null = null,
+    statusCode: number,
+  ): ResultService<T> {
+    return new ResultService<T>(
+      false,
+      message,
+      EnumRespType.NotFoundError,
+      data,
+      statusCode,
+    );
+  }
+
+  public static LogoutSuccess<T>(
+    message: string,
+    statusCode: number,
+  ): ResultService<T> {
+    return new ResultService<T>(
+      true,
+      message,
+      EnumRespType.Success,
+      null,
       statusCode,
     );
   }
