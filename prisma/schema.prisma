@@ -15,7 +15,7 @@ enum UserRole {
 
 model Tbl_User {
   Id Int @id @default(autoincrement()) 
-  UserId String @default(uuid())
+  UserId String @unique @default(uuid())
   UserName String @unique
   FullName String?
   Email String @unique
@@ -29,6 +29,15 @@ model Tbl_Login {
   Id Int @id @default(autoincrement())
   SessionId String @default(uuid())
   UserId String
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @default(now())
+}
+
+model Tbl_RefreshToken {
+  Id Int @id @default(autoincrement())
+  UserId String
+  Token String @unique
+  ExpiredAt DateTime
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @default(now())
 }
