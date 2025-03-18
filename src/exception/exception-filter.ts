@@ -18,14 +18,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    response.status(status).json(exception);
+
+    const model = {
+      IsSuccess:false,
+      StatusCode: status,
+      Path: request.url,
+      Message: exception.message || "Server Error",
+      RespDesc: exception.name || "Internal Server Error"
+    };
+
+    response.status(status).json(model);
   }
 }
-
-// {
-//   status: false,
-//   statusCode: status,
-//   path: request.url,
-//   message: exception.message,
-//   respDesc: exception,
-// }
