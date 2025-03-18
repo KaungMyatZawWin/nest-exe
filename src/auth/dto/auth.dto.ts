@@ -1,4 +1,11 @@
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsIn,
+  isNotEmpty,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 enum UserRole {
   R001, //SuperAdmin
@@ -7,7 +14,7 @@ enum UserRole {
 }
 export class SignUpRequestDto {
   @IsNotEmpty()
-  UserName :string;
+  UserName: string;
 
   @IsNotEmpty()
   @IsString()
@@ -23,7 +30,9 @@ export class SignUpRequestDto {
   Password: string;
 
   @IsNotEmpty()
-  @IsIn(['R001', 'R002','R003'], { message: 'Role must be either R001, R002 or R003' })
+  @IsIn(['R001', 'R002', 'R003'], {
+    message: 'Role must be either R001, R002 or R003',
+  })
   Role: UserRole;
 }
 
@@ -33,4 +42,10 @@ export class SignInRequestDto {
 
   @IsNotEmpty()
   Password: string;
+}
+
+export class RefreshTokenRequestDto {
+  @IsNotEmpty()
+  @IsString()
+  RefreshToken: string;
 }

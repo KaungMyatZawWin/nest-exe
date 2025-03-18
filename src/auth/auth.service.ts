@@ -1,11 +1,19 @@
-import { SignInRequestDto, SignUpRequestDto } from './dto';
+import {
+  RefreshTokenRequestDto,
+  SignInRequestDto,
+  SignUpRequestDto,
+} from './dto';
 import * as argon2 from 'argon2';
 import { ResultService } from 'src/models/result.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SignInResponseModel } from 'src/auth/model/signin.model';
+import {
+  RefreshTokenResponseModel,
+  SignInResponseModel,
+} from 'src/auth/model/signin.model';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -50,34 +58,40 @@ export class AuthService {
     }
   }
 
-  async singin(dto: SignInRequestDto) {
+  async signin(dto: SignInRequestDto) {
     try {
       const user = await this.prisma.tbl_User.findUnique({
         where: {
           UserName: dto.UserName,
         },
       });
-
       if (!user)
         return ResultService.ValidationError("User doesn't exist!", null, 404);
 
-      const isMatchPass: boolean = await argon2.verify(
-        user?.Password,
-        dto.Password,
-      );
+      const isMatchPass = await argon2.verify(user.Password, dto.Password);
       if (!isMatchPass)
-        return ResultService.ValidationError(
-          'Wrong password, please tyr again.',
-          null,
-          400,
-        );
+        return ResultService.ValidationError('Invalid password!', null, 401);
 
+      //generate access token
+      const accessToken = this.jwtService.sign(user);
+
+      //generate refresh token and add into db
+      const refreshToken = uuidv4();
+      const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000);
+      await this.prisma.tbl_RefreshToken.create({
+        data: {
+          Token: refreshToken,
+          UserId: user.UserId,
+          ExpiredAt: expiresAt,
+        },
+      });
+
+      //add user session into db
       const isLogin = await this.prisma.tbl_Login.create({
         data: {
           UserId: user.UserId,
         },
       });
-      const token = await this.generateToken(user);
 
       const model = new SignInResponseModel(
         user.Id,
@@ -89,22 +103,62 @@ export class AuthService {
         user.CreatedAt,
         user.UpdatedAt,
         isLogin.SessionId,
-        token,
+        accessToken,
+        refreshToken,
       );
-
-      return ResultService.Success(model);
+      return ResultService.Success(model, 'Successfully login');
     } catch (error) {
       return ResultService.SystemError(error.message, null, 500);
     }
   }
 
-  generateToken(dto: any): Promise<string> {
-    const payload = dto;
-    const secret = this.configService.get<string>('JWT_SECRET_KEY');
+  async refresh(dto: RefreshTokenRequestDto) {
+    try {
+      const token = await this.prisma.tbl_RefreshToken.findUnique({
+        where: {
+          Token: dto.RefreshToken,
+        },
+      });
+      if (!token)
+        return ResultService.NotFoundError('Invalid Token!', null, 404);
 
-    return this.jwtService.signAsync(payload, {
-      expiresIn: '60s',
-      secret,
-    });
+      if (token.ExpiredAt <= new Date())
+        return ResultService.ValidationError(
+          'Refresh token is expired!',
+          null,
+          419,
+        );
+
+      const user = await this.prisma.tbl_User.findUnique({
+        where: {
+          UserId: token.UserId,
+        },
+      });
+      if (!user)
+        return ResultService.NotFoundError("User doesn't exist!", null, 404);
+
+      const accessToken = this.jwtService.sign(user);
+      const model = new RefreshTokenResponseModel(accessToken);
+      return ResultService.Success(model, 'New access token.');
+    } catch (error) {
+      return ResultService.SystemError(error.message, null, 500);
+    }
+  }
+
+  async signout(dto: RefreshTokenRequestDto) {
+    
+    try {
+      const result = await this.prisma.tbl_RefreshToken.delete({
+        where: {
+          Token: dto.RefreshToken,
+        },
+      });
+      if (!result)
+        return ResultService.SystemError('Failed to signout!', null, 500);
+
+      return ResultService.LogoutSuccess("Successfully logout.",200)
+    } catch (error) {
+      return ResultService.SystemError(error.message, null, 500);
+    }
   }
 }

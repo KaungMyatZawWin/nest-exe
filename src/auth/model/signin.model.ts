@@ -8,7 +8,8 @@ export class SignInResponseModel {
   CreatedAt: Date;
   UpdatedAt: Date;
   SessionId: string;
-  Token: string;
+  AccessToken: string;
+  RefreshToken: string;
 
   constructor(
     Id: number,
@@ -20,7 +21,8 @@ export class SignInResponseModel {
     CreatedAt: Date,
     UpdatedAt: Date,
     SessionId: string,
-    Token: string,
+    AccessToken: string,
+    RefreshToken: string,
   ) {
     this.Id = Id;
     this.UserId = UserId;
@@ -31,6 +33,14 @@ export class SignInResponseModel {
     this.CreatedAt = CreatedAt;
     this.UpdatedAt = UpdatedAt;
     this.SessionId = SessionId;
-    this.Token = Token;
+    this.AccessToken = AccessToken;
+    this.RefreshToken = RefreshToken;
+  }
+}
+
+export class RefreshTokenResponseModel {
+  AccessToken: string;
+  constructor(accessToken: string) {
+    this.AccessToken = accessToken;
   }
 }
