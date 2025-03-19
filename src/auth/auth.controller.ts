@@ -20,7 +20,6 @@ export class AuthController {
     return this.authService.signin(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('/signout')
   async signout(@Body() dto: RefreshTokenRequestDto) {
     return this.authService.signout(dto);

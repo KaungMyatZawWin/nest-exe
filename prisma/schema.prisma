@@ -27,16 +27,9 @@ model Tbl_User {
 
 model Tbl_Login {
   Id Int @id @default(autoincrement())
-  SessionId String @default(uuid())
+  SessionId String @unique @default(uuid())
   UserId String
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime @default(now())
-}
-
-model Tbl_RefreshToken {
-  Id Int @id @default(autoincrement())
-  UserId String
-  Token String @unique
+  RefreshToken String
   ExpiredAt DateTime
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @default(now())
