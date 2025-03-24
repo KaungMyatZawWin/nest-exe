@@ -32,3 +32,8 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## How to call api with curl 
+```
+curl -X POST http://localhost:3000/api/v1/auth/test -H "Content-Type: application/json"
+```
