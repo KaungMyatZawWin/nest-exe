@@ -5,7 +5,8 @@ import {
   SignInRequestDto,
   SignUpRequestDto,
 } from './dto';
-import { AuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
+// import { AuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,18 +21,18 @@ export class AuthController {
     return this.authService.signin(dto);
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Post('/signout')
   async signout(@Body() dto: RefreshTokenRequestDto) {
     return this.authService.signout(dto);
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Post('/refresh')
   refresh(@Body() dto: RefreshTokenRequestDto) {
     return this.authService.refresh(dto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('/test')
   testing(){
     return {Message:'Testing Jwt Auth middleware'}
