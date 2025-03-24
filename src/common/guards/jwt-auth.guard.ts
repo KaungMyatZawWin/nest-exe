@@ -1,28 +1,38 @@
-
-import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
+import { ResultService } from 'src/models/result.service';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-    canActivate(context: ExecutionContext) {
-        // const request = context.switchToHttp().getRequest();
-        // const auth = request.headers.authorization;
-        // console.log("checking ==> " , auth);
-        
-        // if(!auth){
-        //     return false
-        // }
-        
-        // Add your custom authentication logic here
-        // for example, call super.logIn(request) to establish a session.
-        return super.canActivate(context);
-      }
-    
-    //   handleRequest(err, user, info) {
-    //     // You can throw an exception based on either "info" or "err" arguments
-    //     if (err || !user) {
-    //       throw err || new UnauthorizedException();
-    //     }
-    //     return user;
-    //   }
+export class AuthGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
+
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: 'thisisjwtsecretkey',
+      });
+      
+      request['user'] = payload;
+    } catch {
+      throw new UnauthorizedException();
+    }
+    return true;
+  }
+
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
 }

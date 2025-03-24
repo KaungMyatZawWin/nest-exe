@@ -5,7 +5,7 @@ import {
   SignInRequestDto,
   SignUpRequestDto,
 } from './dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { AuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -25,8 +25,15 @@ export class AuthController {
     return this.authService.signout(dto);
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Post('/refresh')
   refresh(@Body() dto: RefreshTokenRequestDto) {
     return this.authService.refresh(dto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/test')
+  testing(){
+    return {Message:'Testing Jwt Auth middleware'}
   }
 }
