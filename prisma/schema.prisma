@@ -37,7 +37,7 @@ model Tbl_Login {
 
 model User {
   UserId            Int            @id @default(autoincrement())
-  UserCode          String         @unique @db.VarChar(50)
+  UserCode          String         @unique @default(uuid())
   UserName          String         @db.VarChar(100)
   GitHubAccountName String?        @db.VarChar(100)
   Nrc               String?        @db.VarChar(50)
@@ -46,7 +46,7 @@ model User {
 
 model Tbl_TechStack {
   TechStackId       Int            @id @default(autoincrement())
-  TechStackCode     String         @unique @db.VarChar(50)
+  TechStackCode     String          @unique @default(uuid())
   TechStackShortCode String?       @db.VarChar(20)
   TechStackName     String         @db.VarChar(100)
 }
@@ -60,7 +60,7 @@ model Tbl_UserTechStack {
 
 model Tbl_Team {
   TeamId            Int           @id @default(autoincrement())
-  TeamCode          String        @unique @db.VarChar(50)
+  TeamCode          String         @unique @default(uuid())
   TeamName          String        @db.VarChar(100)
 }
 
@@ -73,7 +73,7 @@ model Tbl_TeamUser {
 
 model Tbl_Project {
   ProjectId         Int           @id @default(autoincrement())
-  ProjectCode       String        @unique @db.VarChar(50)
+  ProjectCode       String        @unique @default(uuid())
   ProjectName       String        @db.VarChar(100)
   RepoUrl           String?       @db.VarChar(255)
   StartDate         DateTime?     @db.Date
