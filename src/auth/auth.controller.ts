@@ -31,10 +31,4 @@ export class AuthController {
   refresh(@Body() dto: RefreshTokenRequestDto) {
     return this.authService.refresh(dto);
   }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Post('/test')
-  testing(){
-    return {Message:'Testing Jwt Auth middleware'}
-  }
 }

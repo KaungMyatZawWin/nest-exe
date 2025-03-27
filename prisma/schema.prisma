@@ -34,3 +34,68 @@ model Tbl_Login {
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @default(now())
 }
+
+model User {
+  UserId            Int            @id @default(autoincrement())
+  UserCode          String         @unique @db.VarChar(50)
+  UserName          String         @db.VarChar(100)
+  GitHubAccountName String?        @db.VarChar(100)
+  Nrc               String?        @db.VarChar(50)
+  MobileNo          String?        @db.VarChar(20)
+}
+
+model Tbl_TechStack {
+  TechStackId       Int            @id @default(autoincrement())
+  TechStackCode     String         @unique @db.VarChar(50)
+  TechStackShortCode String?       @db.VarChar(20)
+  TechStackName     String         @db.VarChar(100)
+}
+
+model Tbl_UserTechStack {
+  UserTechStackId   Int           @id @default(autoincrement())
+  UserCode          String        @db.VarChar(50)
+  TechStackCode     String        @db.VarChar(50)
+  ProficiencyLevel  Int?
+}
+
+model Tbl_Team {
+  TeamId            Int           @id @default(autoincrement())
+  TeamCode          String        @unique @db.VarChar(50)
+  TeamName          String        @db.VarChar(100)
+}
+
+model Tbl_TeamUser {
+  TeamUserId        Int           @id @default(autoincrement())
+  TeamCode          String        @db.VarChar(50)
+  UserCode          String        @db.VarChar(50)
+  UserRating        Decimal?      @db.Decimal(3,2)
+}
+
+model Tbl_Project {
+  ProjectId         Int           @id @default(autoincrement())
+  ProjectCode       String        @unique @db.VarChar(50)
+  ProjectName       String        @db.VarChar(100)
+  RepoUrl           String?       @db.VarChar(255)
+  StartDate         DateTime?     @db.Date
+  EndDate           DateTime?     @db.Date
+  ProjectStatus     String        @db.VarChar(50)
+  ProjectDescription String?      @db.Text
+}
+
+model Tbl_ProjectTeam {
+  ProjectTeamId     Int           @id @default(autoincrement())
+  ProjectCode       String        @db.VarChar(50)
+  TeamCode          String        @db.VarChar(50)
+  ProjectTeamRating Decimal?      @db.Decimal(3,2)
+  Duration          Int?
+}
+
+model Tbl_ProjectTeamActivity {
+  ProjectTeamActivityId Int       @id @default(autoincrement())
+  UserCode          String        @db.VarChar(50)
+  TeamCode          String        @db.VarChar(50)
+  ProjectCode       String        @db.VarChar(50)
+  TechStackCode     String?       @db.VarChar(50)
+  ActivityDate      DateTime?     @db.Date
+  Tasks             String?       @db.Text
+}
